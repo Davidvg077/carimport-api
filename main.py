@@ -81,19 +81,25 @@ def comparar_importacion_vs_local(precio_origen: float, precio_local_cop: float,
 # 5. Información del vehículo + país
 
 @app.get("/vehiculo", summary="Información de vehículo y país")
-def obtener_info_vehiculo(marca: str, modelo: str, pais_origen: str, precio_origen: float, moneda: str = "USD"):
-    # --- API de países (con fallback) ---
+def obtener_info_vehiculo(
+    marca: str,
+    modelo: str,
+    pais_origen: str,
+    precio_origen: float,
+    moneda: str = "USD",
+):
+    # ---------- Información de país ----------
     pais_data = {
         "nombre": pais_origen,
         "capital": "No disponible",
         "region": "No disponible",
         "moneda": "No disponible",
-        "api_pais_ok": False
+        "api_pais_ok": False,
     }
 
     try:
         url_pais = f"https://restcountries.com/v3.1/name/{pais_origen}"
-        resp_pais = requests.get(url_pais, timeout=8)
+        resp_pais = requests.get(url_pais, timeout=15)
         resp_pais.raise_for_status()
         datos_pais = resp_pais.json()[0]
 
@@ -104,10 +110,11 @@ def obtener_info_vehiculo(marca: str, modelo: str, pais_origen: str, precio_orig
             "capital": datos_pais.get("capital", ["No disponible"])[0],
             "region": datos_pais.get("region", "No disponible"),
             "moneda": monedas[0] if monedas else "No disponible",
-            "api_pais_ok": True
+            "api_pais_ok": True,
         }
-    except Exception as e:
-        pais_data["detalle_error"] = str(e)
+    except Exception:
+        # Si falla, dejamos pais_data como estaba (sin texto de error largo)
+        pass
 
     # Verificar modelo con API de vehículos
     try:
