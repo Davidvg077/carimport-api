@@ -84,7 +84,7 @@ def comparar_importacion_vs_local(precio_origen: float, precio_local_cop: float,
 def obtener_info_vehiculo(marca: str, modelo: str, pais_origen: str, precio_origen: float, moneda: str = "USD"):
     # Datos del país
     try:
-        pais_url = f"https://restcountries.com/v3.1/name/{pais_origen}"
+        pais_url = f"https://restcountries.com/v3.1/name/{pais_origen.capitalize()}"
         pais_resp = requests.get(pais_url, timeout=5).json()
         pais_data = {
             "nombre": pais_resp[0]["name"]["common"],
